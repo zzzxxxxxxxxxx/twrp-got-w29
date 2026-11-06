@@ -1,0 +1,25 @@
+#<src>                                              <mnt_point>         <type>  <mnt_flags and options>                                      <fs_mgr_flags>
+system                                              /system             erofs   ro                                                            wait,logical,first_stage_mount
+vendor                                              /vendor             erofs   ro                                                            wait,logical,first_stage_mount
+odm                                                 /odm                erofs   ro                                                            wait,logical,first_stage_mount
+hw_product                                          /hw_product         erofs   ro                                                            wait,logical,first_stage_mount
+cust                                                /cust               erofs   ro                                                            wait,logical,first_stage_mount
+
+/dev/block/by-name/metadata                         /metadata           ext4    noatime,nosuid,nodev,discard                                  wait,check,formattable
+/dev/block/by-name/userdata                         /data               f2fs    noatime,nosuid,nodev,discard,fsync_mode=nobarrier,inlinecrypt,reserve_root=32768,resgid=1065 wait,check,formattable,latemount,quota,reservedsize=128M,checkpoint=fs,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized+wrappedkey_v0,metadata_encryption=aes-256-xts:wrappedkey_v0,keydirectory=/metadata/vold/metadata_encryption
+/dev/block/by-name/cache                            /cache              ext4    noatime,nosuid,nodev,barrier=1                                wait,check,formattable
+/dev/block/by-name/persist                          /persist            ext4    noatime,nosuid,nodev,barrier=1                                wait
+/dev/block/by-name/misc                             /misc               emmc    defaults                                                      defaults
+/dev/block/by-name/boot                             /boot               emmc    defaults                                                      defaults
+/dev/block/by-name/recovery                         /recovery           emmc    defaults                                                      defaults
+/dev/block/by-name/recovery_ramdisk                 /recovery_ramdisk   emmc    defaults                                                      defaults
+/dev/block/by-name/recovery_vendor                  /recovery_vendor    emmc    defaults                                                      defaults
+/dev/block/by-name/dtbo                             /dtbo               emmc    defaults                                                      defaults
+/dev/block/by-name/vbmeta                           /vbmeta             emmc    defaults                                                      defaults
+/dev/block/by-name/vbmeta_system                    /vbmeta_system      emmc    defaults                                                      defaults
+/dev/block/by-name/vbmeta_vendor                    /vbmeta_vendor      emmc    defaults                                                      defaults
+/dev/block/by-name/vbmeta_odm                       /vbmeta_odm         emmc    defaults                                                      defaults
+/dev/block/by-name/vbmeta_cust                      /vbmeta_cust        emmc    defaults                                                      defaults
+/dev/block/by-name/vbmeta_hw_product                /vbmeta_hw_product  emmc    defaults                                                      defaults
+/dev/block/by-name/recovery_vbmeta                  /recovery_vbmeta    emmc    defaults                                                      defaults
+

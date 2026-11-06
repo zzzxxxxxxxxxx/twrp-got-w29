@@ -1,0 +1,90 @@
+name: Build TWRP for GOT-W29
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-twrp.yml"
+      - "device/**"
+      - "scripts/**"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+
+    steps:
+      - name: Maximize runner disk
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Check out device tree
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            bc bison build-essential ccache curl flex g++-multilib gcc-multilib \
+            git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev \
+            lib32z1-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev \
+            libssl-dev libxml2 libxml2-utils lzop pngcrush python3 rsync \
+            schedtool squashfs-tools xsltproc zip zlib1g-dev openjdk-11-jdk unzip
+
+      - name: Prepare repo and source
+        run: |
+          mkdir -p "$HOME/bin" "$GITHUB_WORKSPACE/aosp"
+          curl -fsSL https://storage.googleapis.com/git-repo-downloads/repo \
+            -o "$HOME/bin/repo"
+          chmod +x "$HOME/bin/repo"
+          export PATH="$HOME/bin:$PATH"
+          cd "$GITHUB_WORKSPACE/aosp"
+          repo init --depth=1 --partial-clone \
+            -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
+            -b twrp-12.1
+          repo sync -c -j4 --force-sync --no-clone-bundle --no-tags
+
+      - name: Link device tree
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/aosp/device/huawei"
+          ln -sfn "$GITHUB_WORKSPACE/device/huawei/got_w29" \
+            "$GITHUB_WORKSPACE/aosp/device/huawei/got_w29"
+
+      - name: Build recovery
+        run: |
+          cd "$GITHUB_WORKSPACE/aosp"
+          export LC_ALL=C
+          export ALLOW_MISSING_DEPENDENCIES=true
+          source build/envsetup.sh
+          lunch twrp_got_w29-eng
+          mka recoveryimage -j"$(nproc)"
+
+      - name: Package GOT-W29 images
+        run: |
+          python3 "$GITHUB_WORKSPACE/scripts/verify_package.py" \
+            --recovery "$GITHUB_WORKSPACE/aosp/out/target/product/got_w29/recovery.img" \
+            --template "$GITHUB_WORKSPACE/device/huawei/got_w29/prebuilt/recovery_ramdisk_header.bin" \
+            --out-dir "$GITHUB_WORKSPACE/out"
+
+      - name: Upload images
+        uses: actions/upload-artifact@v4
+        with:
+          name: TWRP-GOT-W29-${{ github.run_number }}
+          path: |
+            out/*.img
+            out/*.sha256
+          if-no-files-found: error
+          compression-level: 0
+

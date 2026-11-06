@@ -1,0 +1,25 @@
+on early-init
+    write /proc/sys/kernel/sched_boost 1
+
+on init
+    export PATH /sbin:/system/bin:/vendor/bin
+    export LD_LIBRARY_PATH /sbin:/system/lib64:/vendor/lib64:/system/lib64/hw:/vendor/lib64/hw
+    mkdir /persist 0771 system system
+    mkdir /mnt/vendor/persist 0771 system system
+    chown system system /dev/hwdps
+    chmod 0660 /dev/hwdps
+
+on fs
+    write /sys/class/android_usb/android0/f_ffs/aliases adb
+    write /sys/class/android_usb/android0/idVendor 0x12d1
+    write /sys/class/android_usb/android0/idProduct 0x107d
+    write /sys/class/android_usb/android0/iManufacturer ${ro.product.manufacturer}
+    write /sys/class/android_usb/android0/iProduct "GOT-W29 TWRP"
+    write /sys/class/android_usb/android0/iSerial ${ro.serialno}
+
+on boot
+    setprop sys.usb.controller a600000.dwc3
+    setprop sys.usb.configfs 1
+    setprop sys.usb.config adb
+    setprop twrp.decrypt.done false
+

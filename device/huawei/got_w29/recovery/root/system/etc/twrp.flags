@@ -1,0 +1,28 @@
+#<mnt_point>             <type>  <device>                         <flags>
+/system_root             erofs   /dev/block/mapper/system        flags=display="System";logical;backup=1
+/vendor                  erofs   /dev/block/mapper/vendor        flags=display="Vendor";logical;backup=1
+/odm                     erofs   /dev/block/mapper/odm           flags=display="ODM";logical;backup=1
+/hw_product              erofs   /dev/block/mapper/hw_product    flags=display="HW Product";logical;backup=1
+/cust                    erofs   /dev/block/mapper/cust          flags=display="Cust";logical;backup=1
+
+/metadata                ext4    /dev/block/by-name/metadata     flags=display="Metadata";backup=1
+/data                    f2fs    /dev/block/by-name/userdata     flags=display="Data";backup=1;wipeingui;wipeduringfactoryreset;fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized+wrappedkey_v0;metadata_encryption=aes-256-xts:wrappedkey_v0;keydirectory=/metadata/vold/metadata_encryption
+/cache                   ext4    /dev/block/by-name/cache        flags=display="Cache";backup=1;wipeingui
+/persist                 ext4    /dev/block/by-name/persist      flags=display="Persist"
+
+/boot                    emmc    /dev/block/by-name/boot         flags=display="Boot";backup=1;flashimg=1
+/recovery                emmc    /dev/block/by-name/recovery     flags=display="Recovery";backup=1;flashimg=1
+/recovery_ramdisk        emmc    /dev/block/by-name/recovery_ramdisk flags=display="Recovery Ramdisk";backup=1;flashimg=1
+/recovery_vendor         emmc    /dev/block/by-name/recovery_vendor flags=display="Recovery Vendor";backup=1;flashimg=1
+/dtbo                    emmc    /dev/block/by-name/dtbo         flags=display="DTBO";backup=1;flashimg=1
+/vbmeta                  emmc    /dev/block/by-name/vbmeta       flags=display="VBMeta";backup=1;flashimg=1
+/vbmeta_system           emmc    /dev/block/by-name/vbmeta_system flags=display="VBMeta System";backup=1;flashimg=1
+/vbmeta_vendor           emmc    /dev/block/by-name/vbmeta_vendor flags=display="VBMeta Vendor";backup=1;flashimg=1
+/vbmeta_odm              emmc    /dev/block/by-name/vbmeta_odm   flags=display="VBMeta ODM";backup=1;flashimg=1
+/vbmeta_cust             emmc    /dev/block/by-name/vbmeta_cust  flags=display="VBMeta Cust";backup=1;flashimg=1
+/vbmeta_hw_product       emmc    /dev/block/by-name/vbmeta_hw_product flags=display="VBMeta HW Product";backup=1;flashimg=1
+/recovery_vbmeta         emmc    /dev/block/by-name/recovery_vbmeta flags=display="Recovery VBMeta";backup=1;flashimg=1
+/misc                    emmc    /dev/block/by-name/misc         flags=display="Misc";backup=1;flashimg=1
+
+/usb-otg                 auto    /dev/block/sda1                 flags=display="USB OTG";storage;wipeingui;removable
+
