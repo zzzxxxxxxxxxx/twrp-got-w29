@@ -30,16 +30,12 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          if [ -f /etc/apt/sources.list ]; then
-            sudo sed -i \
-              -e 's|azure.archive.ubuntu.com|archive.ubuntu.com|g' \
-              -e 's|ports.ubuntu.com/ubuntu-ports|ports.ubuntu.com/ubuntu-ports|g' \
-              /etc/apt/sources.list
-          fi
-          if [ -d /etc/apt/sources.list.d ]; then
-            sudo find /etc/apt/sources.list.d -type f -print0 | \
-              sudo xargs -0 -r sed -i 's|azure.archive.ubuntu.com|archive.ubuntu.com|g'
-          fi
+          while IFS= read -r source_file; do
+            real_file="$(readlink -f "$source_file")"
+            sudo sed -i 's|azure\.archive\.ubuntu\.com|archive.ubuntu.com|g' "$real_file"
+          done < <(sudo grep -RIl 'azure\.archive\.ubuntu\.com' /etc/apt 2>/dev/null || true)
+          grep -RIn 'azure\.archive\.ubuntu\.com' /etc/apt || true
+          grep -RIn '^deb\|^URIs:' /etc/apt/sources.list /etc/apt/sources.list.d 2>/dev/null || true
           sudo apt-get update
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
             bc bison build-essential ccache curl flex g++-multilib gcc-multilib \
