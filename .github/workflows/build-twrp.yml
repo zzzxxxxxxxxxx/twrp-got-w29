@@ -58,7 +58,7 @@ jobs:
           build-mount-path: /workdir
           root-reserve-mb: 32768
           temp-reserve-mb: 1024
-          swap-size-mb: 0
+          swap-size-mb: 4096
 
       - name: Restore repo cache
         id: repo-cache
