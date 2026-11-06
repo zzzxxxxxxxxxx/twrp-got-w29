@@ -55,15 +55,6 @@ jobs:
           temp-reserve-mb: 1024
           swap-size-mb: 4096
 
-      - name: Restore repo cache
-        id: repo-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: /workdir/aosp/.repo
-          key: twrp-12.1-repo-full-v4
-          restore-keys: |
-            twrp-12.1-repo-full-
-
       - name: Prepare repo and source
         run: |
           sudo chown -R "$USER:$(id -gn)" /workdir
@@ -76,22 +67,8 @@ jobs:
           repo init --depth=1 \
             -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
             -b twrp-12.1
-          repo sync -n -c -j4 --force-sync --no-clone-bundle --no-tags
+          repo sync -c -j8 --force-sync --no-clone-bundle --no-tags
           du -sh .repo
-          df -h
-
-      - name: Save repo cache
-        if: success() && steps.repo-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: /workdir/aosp/.repo
-          key: twrp-12.1-repo-full-v4
-
-      - name: Check out source
-        run: |
-          export PATH="$HOME/bin:$PATH"
-          cd /workdir/aosp
-          repo sync -l -j4 --force-sync
           df -h
 
       - name: Copy device tree
