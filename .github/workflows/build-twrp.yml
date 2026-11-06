@@ -65,7 +65,7 @@ jobs:
           repo init --depth=1 --partial-clone \
             -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
             -b twrp-12.1
-          repo sync -c -j4 --force-sync --no-clone-bundle --no-tags
+          repo sync -n -c -j4 --force-sync --no-clone-bundle --no-tags
           du -sh .repo
           df -h
 
@@ -75,6 +75,13 @@ jobs:
         with:
           path: ${{ github.workspace }}/aosp/.repo
           key: twrp-12.1-minimal-repo-v1
+
+      - name: Check out source
+        run: |
+          export PATH="$HOME/bin:$PATH"
+          cd "$GITHUB_WORKSPACE/aosp"
+          repo sync -l -j4 --force-sync
+          df -h
 
       - name: Copy device tree
         run: |
