@@ -58,11 +58,12 @@ jobs:
             -b twrp-12.1
           repo sync -c -j4 --force-sync --no-clone-bundle --no-tags
 
-      - name: Link device tree
+      - name: Copy device tree
         run: |
-          mkdir -p "$GITHUB_WORKSPACE/aosp/device/huawei"
-          ln -sfn "$GITHUB_WORKSPACE/device/huawei/got_w29" \
-            "$GITHUB_WORKSPACE/aosp/device/huawei/got_w29"
+          mkdir -p "$GITHUB_WORKSPACE/aosp/device/huawei/got_w29"
+          rsync -a --delete \
+            "$GITHUB_WORKSPACE/device/huawei/got_w29/" \
+            "$GITHUB_WORKSPACE/aosp/device/huawei/got_w29/"
 
       - name: Build recovery
         run: |
