@@ -30,11 +30,14 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          timeout 300 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-            --no-install-recommends \
-            bc bison ccache flex g++-multilib gcc-multilib libncurses5-dev \
-            libssl-dev libxml2-utils lzop rsync schedtool squashfs-tools \
-            unzip zip zlib1g-dev zstd
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            bc bison build-essential ccache curl flex g++-multilib gcc-multilib \
+            git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev \
+            lib32z1-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev \
+            libssl-dev libxml2 libxml2-utils lzop pngcrush python3 rsync \
+            schedtool squashfs-tools tar xsltproc zip zlib1g-dev openjdk-11-jdk \
+            unzip zstd
           sudo mkdir -p /workdir
           sudo chown -R "$USER:$(id -gn)" /workdir
 
@@ -47,8 +50,8 @@ jobs:
         id: repo-cache
         uses: actions/cache/restore@v4
         with:
-          path: /workdir/twrp-12.1-repo-cache.tar.zst
-          key: twrp-12.1-repo-full-v3
+          path: /workdir/aosp/.repo
+          key: twrp-12.1-repo-full-v4
           restore-keys: |
             twrp-12.1-repo-full-
 
@@ -60,25 +63,20 @@ jobs:
             -o "$HOME/bin/repo"
           chmod +x "$HOME/bin/repo"
           export PATH="$HOME/bin:$PATH"
-          if [ -s /workdir/twrp-12.1-repo-cache.tar.zst ]; then
-            tar --zstd -xf /workdir/twrp-12.1-repo-cache.tar.zst -C /workdir/aosp
-          fi
           cd /workdir/aosp
           repo init --depth=1 \
             -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
             -b twrp-12.1
           repo sync -n -c -j4 --force-sync --no-clone-bundle --no-tags
           du -sh .repo
-          tar --zstd -cf /workdir/twrp-12.1-repo-cache.tar.zst -C /workdir/aosp .repo
-          ls -lh /workdir/twrp-12.1-repo-cache.tar.zst
           df -h
 
       - name: Save repo cache
         if: success() && steps.repo-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: /workdir/twrp-12.1-repo-cache.tar.zst
-          key: twrp-12.1-repo-full-v3
+          path: /workdir/aosp/.repo
+          key: twrp-12.1-repo-full-v4
 
       - name: Check out source
         run: |
