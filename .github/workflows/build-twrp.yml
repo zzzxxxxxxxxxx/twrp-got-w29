@@ -44,6 +44,9 @@ jobs:
         uses: easimon/maximize-build-space@master
         with:
           build-mount-path: /workdir
+          root-reserve-mb: 32768
+          temp-reserve-mb: 1024
+          swap-size-mb: 0
 
       - name: Restore repo cache
         id: repo-cache
