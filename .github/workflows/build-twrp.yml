@@ -48,9 +48,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: /workdir/twrp-12.1-repo-cache.tar.zst
-          key: twrp-12.1-repo-tar-v2
+          key: twrp-12.1-repo-full-v3
           restore-keys: |
-            twrp-12.1-repo-tar-
+            twrp-12.1-repo-full-
 
       - name: Prepare repo and source
         run: |
@@ -64,7 +64,7 @@ jobs:
             tar --zstd -xf /workdir/twrp-12.1-repo-cache.tar.zst -C /workdir/aosp
           fi
           cd /workdir/aosp
-          repo init --depth=1 --partial-clone \
+          repo init --depth=1 \
             -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
             -b twrp-12.1
           repo sync -n -c -j4 --force-sync --no-clone-bundle --no-tags
@@ -78,7 +78,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: /workdir/twrp-12.1-repo-cache.tar.zst
-          key: twrp-12.1-repo-tar-v2
+          key: twrp-12.1-repo-full-v3
 
       - name: Check out source
         run: |
