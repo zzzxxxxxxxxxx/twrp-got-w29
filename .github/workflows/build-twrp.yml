@@ -45,6 +45,15 @@ jobs:
             libssl-dev libxml2 libxml2-utils lzop pngcrush python3 rsync \
             schedtool squashfs-tools xsltproc zip zlib1g-dev openjdk-11-jdk unzip
 
+      - name: Restore repo cache
+        id: repo-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/aosp/.repo
+          key: twrp-12.1-minimal-repo-v1
+          restore-keys: |
+            twrp-12.1-minimal-repo-
+
       - name: Prepare repo and source
         run: |
           mkdir -p "$HOME/bin" "$GITHUB_WORKSPACE/aosp"
@@ -57,6 +66,15 @@ jobs:
             -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
             -b twrp-12.1
           repo sync -c -j4 --force-sync --no-clone-bundle --no-tags
+          du -sh .repo
+          df -h
+
+      - name: Save repo cache
+        if: success() && steps.repo-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ github.workspace }}/aosp/.repo
+          key: twrp-12.1-minimal-repo-v1
 
       - name: Copy device tree
         run: |
