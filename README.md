@@ -35,6 +35,18 @@ lunch twrp_got_w29-eng
 mka recoveryimage
 ```
 
+### Local Docker build
+
+The local build keeps the AOSP checkout outside the repository:
+
+```sh
+chmod +x docker/build-local.sh docker/container-build.sh
+./docker/build-local.sh
+```
+
+The source is stored in `/home/zzx/twrp-got-w29/local-build` by default.
+Override it with `BUILD_ROOT=/path/to/build ./docker/build-local.sh`.
+
 The packaging step uploads:
 
 - `recovery.img`: complete recovery boot image for the `recovery` partition.
